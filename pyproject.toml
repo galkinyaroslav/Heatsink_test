@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "heatsink-test"
+version = "0.1.0"
+description = ""
+authors = ["Yaroslav Galkin <galkinyaroslav@gmail.com>"]
+readme = "README.md"
+packages = [{include = "heatsink_test"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
