@@ -1,8 +1,8 @@
-"""database creation
+"""Initial
 
-Revision ID: 2500b8deebfa
+Revision ID: ab948ce151b6
 Revises: 
-Create Date: 2023-07-10 00:36:22.921070
+Create Date: 2023-07-10 02:20:30.273356
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '2500b8deebfa'
+revision = 'ab948ce151b6'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -26,11 +26,14 @@ def upgrade() -> None:
     )
     op.create_table('user',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('email', sa.String(), nullable=False),
     sa.Column('username', sa.String(), nullable=False),
-    sa.Column('password', sa.String(), nullable=False),
     sa.Column('registered_datetime', sa.TIMESTAMP(), nullable=True),
     sa.Column('role_id', sa.Integer(), nullable=True),
+    sa.Column('email', sa.String(length=320), nullable=False),
+    sa.Column('hashed_password', sa.String(length=1024), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.Column('is_superuser', sa.Boolean(), nullable=False),
+    sa.Column('is_verified', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['role_id'], ['role.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

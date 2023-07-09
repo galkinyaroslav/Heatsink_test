@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import MetaData, Integer, String, TIMESTAMP, ForeignKey, Table, Column, JSON
+from sqlalchemy import MetaData, Integer, String, TIMESTAMP, ForeignKey, Table, Column, JSON, Boolean
+from sqlalchemy.orm import mapped_column
 
 metadata = MetaData()
 
@@ -16,9 +17,14 @@ user = Table(
     'user',
     metadata,
     Column('id', Integer, primary_key=True),
-    Column('email', String, nullable=False),
     Column('username', String, nullable=False),
-    Column('password', String, nullable=False),
     Column('registered_datetime', TIMESTAMP, default=datetime.utcnow),
     Column('role_id', Integer, ForeignKey(role.c.id)),
+    Column('email', String(length=320), nullable=False),
+    Column('hashed_password', String(length=1024), nullable=False),
+    Column('is_active', Boolean, default=True, nullable=False),
+    Column('is_superuser', Boolean, default=False, nullable=False),
+    Column('is_verified', Boolean, default=False, nullable=False)
 )
+
+
