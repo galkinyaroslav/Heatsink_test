@@ -1,7 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import MetaData, Integer, String, TIMESTAMP, ForeignKey, Table, Column, JSON, Boolean
-from sqlalchemy.orm import mapped_column
+from sqlalchemy import MetaData, Integer, String, ForeignKey, Table, Column, JSON, Boolean
+from sqlalchemy.dialects.postgresql import TIMESTAMP
 
 metadata = MetaData()
 
