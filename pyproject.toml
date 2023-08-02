@@ -13,6 +13,15 @@ pyvisa-py = "^0.7.0"
 gpib-ctypes = "^0.3.0"
 pyusb = "^1.2.1"
 pyserial = "^3.5"
+sqlalchemy = "^2.0.18"
+fastapi = {extras = ["all"], version = "^0.99.1"}
+alembic = "^1.11.1"
+asyncpg = "^0.27.0"
+prospector = "^1.10.2"
+pytest = "^7.4.0"
+httpx = "^0.24.1"
+fastapi-users = {extras = ["sqlalchemy"], version = "^12.0.0"}
+uvicorn = {extras = ["all"], version = "^0.22.0"}
 
 
 [build-system]
