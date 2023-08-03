@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 
 from fastapi_users import FastAPIUsers
 
@@ -25,6 +25,13 @@ app.include_router(
     prefix="/auth",
     tags=["auth"],
 )
+
+current_user = fastapi_users.current_user()
+
+
+@app.get('/protected-route')
+def protected_route(user: User = Depends(current_user)):
+    return f'hello, {user.email}'
 
 # app.include_router(
 #     fastapi_users.get_verify_router(UserRead),
