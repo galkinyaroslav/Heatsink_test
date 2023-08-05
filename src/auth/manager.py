@@ -4,10 +4,8 @@ from fastapi import Depends, Request, Response
 from fastapi_users import BaseUserManager, IntegerIDMixin
 
 from config import SECRET_KEY_RESET, SECRET_KEY_VERIFICATION
-from auth.database import User, get_user_db
-
-SECRET_KEY_RESET = SECRET_KEY_RESET
-SECRET_KEY_VERIFICATION = SECRET_KEY_VERIFICATION
+from auth.models import User
+from auth.utils import get_user_db
 
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
@@ -15,17 +13,17 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     verification_token_secret = SECRET_KEY_VERIFICATION
 
     async def on_after_register(self, user: User, request: Optional[Request] = None):
-        print(f"User {user.id} has registered.")
+        print(f"User {user.username} has registered.")
 
     async def on_after_forgot_password(
         self, user: User, token: str, request: Optional[Request] = None
     ):
-        print(f"User {user.id} has forgot their password. Reset token: {token}")
+        print(f"User {user.username} has forgot their password. Reset token: {token}")
 
     async def on_after_request_verify(
         self, user: User, token: str, request: Optional[Request] = None
     ):
-        print(f"Verification requested for user {user.id}. Verification token: {token}")
+        print(f"Verification requested for user {user.username}. Verification token: {token}")
 
     async def on_after_login(
             self,
@@ -33,7 +31,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
             request: Optional[Request] = None,
             response: Optional[Response] = None,
     ):
-        print(f"User {user.id} logged in.")
+        print(f"User {user.username} logged in.")
 
 
 async def get_user_manager(user_db=Depends(get_user_db)):
