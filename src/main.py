@@ -1,16 +1,8 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, Depends
 
-from fastapi_users import FastAPIUsers
-
-from auth.auth import auth_backend
-from auth.database import User
-from auth.manager import get_user_manager
+from auth.config import auth_backend, fastapi_users
+from auth.models import User
 from auth.schemas import UserRead, UserCreate
-
-fastapi_users = FastAPIUsers[User, int](
-    get_user_manager,
-    [auth_backend],
-)
 
 app = FastAPI(title="Heatsink Test")
 
