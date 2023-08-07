@@ -1,7 +1,8 @@
 from typing import AsyncGenerator
 
+import sqlalchemy
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, declarative_base
 
 from config import DB_NAME, DB_PORT, DB_HOST, DB_PASS, DB_USER
 
@@ -10,7 +11,6 @@ DATABASE_URL = f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{D
 
 class Base(DeclarativeBase):
     pass
-
 
 engine = create_async_engine(DATABASE_URL)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)

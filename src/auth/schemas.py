@@ -2,15 +2,7 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi_users import schemas
-from pydantic import EmailStr, BaseModel, validator
-
-
-# class ModelNaiveDt(BaseModel):
-#     dt: datetime = None
-#
-#     @validator("dt", pre=True)
-#     def dt_validate(cls, dt):
-#         return datetime.fromtimestamp(dt)
+from pydantic import EmailStr
 
 
 class UserRead(schemas.BaseUser[int]):
