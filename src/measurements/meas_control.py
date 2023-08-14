@@ -1,8 +1,10 @@
 import pyvisa as visa
+from pyvisa import Resource
 
 CHANNELS = '(@101:110,201:210)'
 
-def find_device():
+
+def find_device() -> Resource:
     rmag = visa.ResourceManager()  # '/usr/lib/x86_64-linux-gnu/libiovisa.so'
     list_devices = rmag.list_resources('?*')
     print(list_devices)
@@ -20,10 +22,9 @@ def find_device():
             print('This is not appropriate device or device is not found')
 
 
-def configure(device):
+def configure(device: Resource) -> dict:
     a34970.write_termination = '\n'
     a34970.read_termination = '\n'
-    print(f"{device.query('*IDN?')} --->>> CONFIGURING")
     device.write('*RST')
     device.write('*CLS')
 
@@ -37,13 +38,17 @@ def configure(device):
 
     # print(device.query(f'CONF? {CHANNELS}'))
     device.write(f'ROUT:SCAN {CHANNELS}')
+    message = f"{device.query('*IDN?')} --->>> CONFIGURING"
+    print(message)
+    return {'message': message}
 
 
-def read_data(device):
+def read_data(device: Resource) -> list:
     device.write(f'INIT')
     row_data = device.query(f'FETC?')
     data = [float(value) for value in row_data.strip().split(',')]
-    print(data)
+    # print(data)
+    return data
 
 
 if __name__ == '__main__':
