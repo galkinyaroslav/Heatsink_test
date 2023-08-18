@@ -10,7 +10,7 @@ DATABASE_URL = f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{D
 
 
 class Base(DeclarativeBase):
-    pass
+    __table_args__ = {'extend_existing': True}
 
 
 engine = create_async_engine(DATABASE_URL)
