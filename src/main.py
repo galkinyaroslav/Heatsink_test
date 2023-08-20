@@ -3,7 +3,7 @@ from fastapi import FastAPI, Depends
 from auth.auth_config import auth_backend, fastapi_users
 from auth.models import User
 from auth.schemas import UserRead, UserCreate
-
+from measurements.router import router as measurements_router
 app = FastAPI(title="Heatsink Test")
 
 app.include_router(
@@ -17,6 +17,8 @@ app.include_router(
     prefix="/auth",
     tags=["auth"],
 )
+
+app.include_router(measurements_router)
 
 current_user = fastapi_users.current_user()
 

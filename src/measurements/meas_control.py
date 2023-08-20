@@ -23,8 +23,8 @@ def find_device() -> Resource:
 
 
 def configure(device: Resource) -> dict:
-    a34970.write_termination = '\n'
-    a34970.read_termination = '\n'
+    device.write_termination = '\n'
+    device.read_termination = '\n'
     device.write('*RST')
     device.write('*CLS')
 
@@ -43,12 +43,12 @@ def configure(device: Resource) -> dict:
     return {'message': message}
 
 
-def read_data(device: Resource) -> list:
+def read_data(device: Resource) -> dict:
     device.write(f'INIT')
     row_data = device.query(f'FETC?')
     data = [float(value) for value in row_data.strip().split(',')]
     # print(data)
-    return data
+    return {'data': data}
 
 
 if __name__ == '__main__':
