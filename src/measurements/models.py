@@ -9,7 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from database import Base
 
 
-MeasuredPart = Literal['first10', 'second10', 'third10']
+MeasuredPart = Literal['first20', 'second20', 'third20']
 
 
 class Run(Base):
@@ -32,6 +32,6 @@ class Measurement(Base):
     ))
     measure_datetime:  Mapped[TIMESTAMP] = mapped_column(TIMESTAMP, default=datetime.utcnow)
     user_id:  Mapped[int] = mapped_column(Integer, ForeignKey('users_table.id'), )
-    data: Mapped[str] = mapped_column(String(length=320), unique=True, index=True, nullable=False)
+    data: Mapped[list[float]] = mapped_column(ARRAY(Float))
 
 
