@@ -1,8 +1,6 @@
 from typing import AsyncGenerator
-
-import sqlalchemy
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, declarative_base
+from sqlalchemy.orm import DeclarativeBase
 
 from config import DB_NAME, DB_PORT, DB_HOST, DB_PASS, DB_USER
 

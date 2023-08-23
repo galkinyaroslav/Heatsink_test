@@ -1,14 +1,18 @@
-
 from fastapi import APIRouter, Depends, Response
 
-from sqlalchemy import select, insert, update
+from sqlalchemy import select, insert, update, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from auth.auth_config import fastapi_users
+from auth.models import User
 from database import get_async_session
 import measurements.meas_control as mc
-from measurements.models import Run
+from measurements.models import Run, Measurement
+from measurements.schemas import RunPart, MeasurementsToDB
 
 a34970 = mc.find_device()
+
+current_user = fastapi_users.current_user()
 
 router = APIRouter(
     prefix='/measurements',
@@ -17,16 +21,17 @@ router = APIRouter(
 
 
 @router.post('/new-run')
-async def new_run(session: AsyncSession = Depends(get_async_session)):
+async def new_run(session: AsyncSession = Depends(get_async_session), user: User = Depends(current_user)):
     # update Run.number incrementing by 1
-    stmt = update(Run).filter(Run.id == 1).values(number=Run.number+1)
+    stmt = update(Run).filter(Run.id == 1).values(number=Run.number + 1)
     await session.execute(stmt)
     await session.commit()
     return {'massage': 'new run is initiated'}
 
 
 @router.post('/run-num')
-async def run_num(session: AsyncSession = Depends(get_async_session)):
+async def run_num(session: AsyncSession = Depends(get_async_session),
+                  user: User = Depends(current_user)):
     # get current Run.number
     query = select(Run).where(Run.id == 1)
     result = await session.scalars(query)
@@ -42,37 +47,79 @@ async def run_num(session: AsyncSession = Depends(get_async_session)):
 
 
 @router.get('/configure')
-async def configurate_device(session: AsyncSession = Depends(get_async_session)) -> dict:
+async def configurate_device(session: AsyncSession = Depends(get_async_session),
+                             user: User = Depends(current_user)):
     # configure device
     data = mc.configure(a34970)
     return data
 
 
 @router.get('/get-measurements')
-async def get_measurements(session: AsyncSession = Depends(get_async_session)):
+async def get_measurements(session: AsyncSession = Depends(get_async_session),
+                           user: User = Depends(current_user)):
     # data from device
     data = mc.read_data(a34970)
     return data
 
 
-@router.get('/get-measurements/{run_number}')
-async def get_measurements(session: AsyncSession = Depends(get_async_session)):
+@router.post('/run-meas')
+async def run_meas(part: RunPart = RunPart.first20,
+                   session: AsyncSession = Depends(get_async_session),
+                   user: User = Depends(current_user)):
+    # run part of measurements and add it to db
+    # measurements_to_db = dict()
+    # data = mc.read_data(a34970)
+    # measurements_to_db['data'] = data['data']
+    # run = await session.scalars(select(Run).where(Run.id == 1))
+    # measurements_to_db['run_number'] = run.one().number
+    # measurements_to_db['user_id'] = user.id
+    # measurements_to_db['measuredpart'] = part.name
+    # stmt = insert(Measurement).values(**measurements_to_db)
+    # await session.execute(stmt)
+    # await session.commit()
+    # return measurements_to_db
+    run = await session.scalars(select(Run).where(Run.id == 1))
+    data = mc.read_data(a34970)
+    measurements_to_db = Measurement()
+    measurements_to_db.data = data['data']
+    measurements_to_db.run_number = run.one().number
+    measurements_to_db.user_id = user.id
+    measurements_to_db.measuredpart = part.name
+    session.add(measurements_to_db)
+    await session.commit()
+    await session.refresh(measurements_to_db)
+    return measurements_to_db
+
+
+@router.get('/get-runs')
+async def get_runs(session: AsyncSession = Depends(get_async_session),
+                   user: User = Depends(current_user)):
     # data from db
+    # query = select(Measurement.run_number.distinct())
+    # print(query)
+    # results = await session.execute(query)
+    # print(results)
+    # run_numbers = results.scalars().all()
+    query = (select(Measurement.run_number, func.min(Measurement.measure_datetime).label('datetime'))
+             .group_by(Measurement.run_number)
+             .order_by(Measurement.run_number))
+    # print(query)
+    results = await session.execute(query)
+    run_numbers = results
 
-    return
+    data = list()
 
+    for i in run_numbers.fetchall():
+        data.append(dict(zip(run_numbers.keys(), i)))
 
-@router.post('/run-meas-bottom')
-async def run_meas_bottom(session: AsyncSession = Depends(get_async_session)):
-    # run measurements bottom side and add it to db
-    return
+    return {'runs': data}
 
-
-@router.post('/run-meas-top')
-async def run_meas_top(session: AsyncSession = Depends(get_async_session)):
-    # run measurements top side and add it to db
-    return
-
-
-
-
+# @router.get('/runs/{run_number}')
+# async def get_measurements(run_number: int,
+#                            session: AsyncSession = Depends(get_async_session)):
+#     # TODO not finished
+#     # data from db
+#     query = select(Measurement).where(Measurement.run_number == run_number)
+#     result = await session.execute(query)
+#
+#     return result.all()

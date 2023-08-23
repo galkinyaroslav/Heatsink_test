@@ -38,7 +38,7 @@ def configure(device: Resource) -> dict:
 
     # print(device.query(f'CONF? {CHANNELS}'))
     device.write(f'ROUT:SCAN {CHANNELS}')
-    message = f"{device.query('*IDN?')} --->>> CONFIGURING"
+    message = f"{device.query('*IDN?')} --->>> CONFIGURED"
     print(message)
     return {'message': message}
 
