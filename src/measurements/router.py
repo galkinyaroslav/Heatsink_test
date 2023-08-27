@@ -1,6 +1,8 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, Response
+from pydantic import BaseModel
 
-from sqlalchemy import select, insert, update, func
+from sqlalchemy import select, insert, update, func, Row, RowMapping
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth.auth_config import fastapi_users
@@ -94,32 +96,27 @@ async def run_meas(part: RunPart = RunPart.first20,
 @router.get('/get-runs')
 async def get_runs(session: AsyncSession = Depends(get_async_session),
                    user: User = Depends(current_user)):
-    # data from db
-    # query = select(Measurement.run_number.distinct())
-    # print(query)
-    # results = await session.execute(query)
-    # print(results)
-    # run_numbers = results.scalars().all()
     query = (select(Measurement.run_number, func.min(Measurement.measure_datetime).label('datetime'))
              .group_by(Measurement.run_number)
              .order_by(Measurement.run_number))
-    # print(query)
     results = await session.execute(query)
-    run_numbers = results
+    run_numbers = results.mappings()
+    # print(run_numbers)
+    response = [i for i in run_numbers]
+    # print(response)
+    return {'data': response}
 
-    data = list()
 
-    for i in run_numbers.fetchall():
-        data.append(dict(zip(run_numbers.keys(), i)))
+@router.get('/runs/{run_number}')
+async def get_measurements(run_number: int,
+                           session: AsyncSession = Depends(get_async_session),
+                           user: User = Depends(current_user)):
 
-    return {'runs': data}
-
-# @router.get('/runs/{run_number}')
-# async def get_measurements(run_number: int,
-#                            session: AsyncSession = Depends(get_async_session)):
-#     # TODO not finished
-#     # data from db
-#     query = select(Measurement).where(Measurement.run_number == run_number)
-#     result = await session.execute(query)
-#
-#     return result.all()
+    # data from db
+    query = select(Measurement).where(Measurement.run_number == run_number)
+    results = await session.execute(query)
+    listofdata = results.scalars().all()
+    print(listofdata)
+    for i in listofdata:
+        print(i.id)
+    return listofdata
