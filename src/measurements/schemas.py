@@ -13,9 +13,9 @@ class RunPart(str, Enum):
     third20 = 'third20'
 
 
-# class MeasurementsToDB(BaseModel):
-#     run_number: int
-#     measuredpart: str
-#     measure_datetime: datetime
-#     user_id: int
-#     data: list[float]
+class MeasurementsToDB(BaseModel):
+    run_number: int
+    measuredpart: str
+    measure_datetime: datetime
+    user_id: int
+    data: list[float]
