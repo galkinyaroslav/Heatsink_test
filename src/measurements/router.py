@@ -94,11 +94,16 @@ async def run_meas(part: RunPart = RunPart.first20,
 
 
 @router.get('/get-runs')
-async def get_runs(session: AsyncSession = Depends(get_async_session),
+async def get_runs(offset: int | None = None,
+                   limit: int | None = None,
+                   session: AsyncSession = Depends(get_async_session),
                    user: User = Depends(current_user)):
     query = (select(Measurement.run_number, func.min(Measurement.measure_datetime).label('datetime'))
              .group_by(Measurement.run_number)
-             .order_by(Measurement.run_number))
+             .offset(offset)
+             .limit(limit)
+             .order_by(Measurement.run_number)
+             )
     results = await session.execute(query)
     run_numbers = results.mappings()
     # print(run_numbers)
