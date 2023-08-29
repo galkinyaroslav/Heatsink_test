@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script>
+
+</script>
+{% endblock %}
+{% block content %}
+<div class="flex justify-center flex-col items-center">
+<!--    <div class="flex my-3 gap-5">-->
+<!--&lt;!&ndash;        <input id="operation_search" type="text" placeholder="Тип операции" class="text-xl">&ndash;&gt;-->
+<!--&lt;!&ndash;        <button onclick="searchForOperation()" class="border-2 rounded-3xl bg-gray-300 p-3">Поиск по операциям</button>&ndash;&gt;-->
+<!--    </div>-->
+    <span class="flex text-3xl my-3">ALL RUNS</span>
+    {% for run in runs %}
+        <div class="flex rounded-3 border-2 p-3 mt-5">
+            <div class="flex flex-row">
+                <span class="text-2xl font-bold">{{ run.run_number }}</span>
+
+                <span class="text-lg">{{ run.datetime }}</span>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
