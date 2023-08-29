@@ -5,19 +5,30 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from config import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS
-from auth.models import metadata
+
+# add src to path
+import os
+import sys
+sys.path.append(os.path.join(sys.path[0], 'src'))
+from src.config import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS
+
+# it's necessary to import Base from all models, that imported database.Base
+from src.auth.models import Base as AuthBase
+from src.measurements.models import Base as MeasBase
+# database.Base is not necessary
+# from src.database import Base
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 section = config.config_ini_section
 config.set_section_option(section, 'DB_HOST', DB_HOST)
+# print(DB_HOST)
 config.set_section_option(section, 'DB_PORT', DB_PORT)
 config.set_section_option(section, 'DB_NAME', DB_NAME)
 config.set_section_option(section, 'DB_USER', DB_USER)
 config.set_section_option(section, 'DB_PASS', DB_PASS)
-
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -27,8 +38,20 @@ if config.config_file_name is not None:
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = metadata
+# prints show if Base imported from each .models, all tables exist in each .metadata
+for table in MeasBase.metadata.tables:
+    print(table)
+for table in AuthBase.metadata.tables:
+    print(table)
+# Do nothing
+# for table in Base.metadata.tables:
+#     print(f'Base {table}')
+
+# it's enough to use one of imported _Base.metadata
+target_metadata = [AuthBase.metadata]
+
+
+# target_metadata = [meta_measurements, meta_auth]
 
 
 # other values from the config, defined by the needs of env.py,
@@ -53,6 +76,7 @@ def run_migrations_offline() -> None:
     context.configure(
         url=url,
         target_metadata=target_metadata,
+
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
     )
