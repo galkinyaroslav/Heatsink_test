@@ -121,7 +121,4 @@ async def get_measurements(run_number: int,
     query = select(Measurement).where(Measurement.run_number == run_number)
     results = await session.execute(query)
     listofdata = results.scalars().all()
-    print(listofdata)
-    for i in listofdata:
-        print(i.id)
     return listofdata
