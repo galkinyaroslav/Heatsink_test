@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script>
+
+</script>
+{% endblock %}
+{% block content %}
+<div class="flex justify-center flex-col items-center">
+    <span class="flex text-3xl my-3"></span>
+    <ul>
+    {% for data in listofdata %}
+        <li>
+            <span class="text-l">{{data.measuredpart}}</span>
+            <span class="text-l">{{data.data}}</span>
+            <span class="text-l">{{data.measure_datetime}}</span>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+

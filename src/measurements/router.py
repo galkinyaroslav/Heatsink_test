@@ -113,7 +113,7 @@ async def get_runs(offset: int | None = None,
 
 
 @router.get('/runs/{run_number}')
-async def get_measurements(run_number: int,
+async def get_arun(run_number: int,
                            session: AsyncSession = Depends(get_async_session),
                            user: User = Depends(current_user)):
 
