@@ -7,7 +7,7 @@
               <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                   Sign up to your account
               </h1>
-              <form class="space-y-4 md:space-y-6" action="#">
+              <form class="space-y-4 md:space-y-6" id="signUpForm">
                   <div>
                       <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
                       <input type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required="">
@@ -16,25 +16,116 @@
                       <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
                       <input type="password" name="password" id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
                   </div>
-                  <div class="flex items-center justify-between">
-<!--                      <div class="flex items-start">-->
-<!--                          <div class="flex items-center h-5">-->
-<!--                            <input id="remember" aria-describedby="remember" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" required="">-->
-<!--                          </div>-->
-<!--                          <div class="ml-3 text-sm">-->
-<!--                            <label for="remember" class="text-gray-500 dark:text-gray-300">Remember me</label>-->
-<!--                          </div>-->
-<!--                      </div>-->
-<!--                      <a href="#" class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password?</a>-->
+                  <div>
+                      <label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
+                      <input type="text" name="username" id="username" placeholder="" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">
                   </div>
-                  <button type="submit" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Sign up</button>
+                  <div>
+                      <label for="is_active" class="relative inline-flex items-center mb-4 cursor-pointer">
+                          <input type="checkbox" name="checkboxes" id="is_active" value="True" class="sr-only peer" checked>
+                          <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                          <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">is_active</span>
+                      </label>
+                  </div>
+                  <div>
+                      <label for="is_superuser" class="relative inline-flex items-center mb-4 cursor-pointer">
+                          <input type="checkbox" name="checkboxes" id="is_superuser" value="False" class="sr-only peer" disabled>
+                          <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                          <span class="ml-3 text-sm font-medium text-gray-400 dark:text-gray-500">is_superuser</span>
+                      </label>
+                  </div>
+                  <div>
+                      <label for="is_verified" class="relative inline-flex items-center mb-3 cursor-pointer">
+                          <input type="checkbox" name="checkboxes" id="is_verified" value="False" class="sr-only peer" disabled>
+                          <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                          <span class="ml-3 text-sm font-medium text-gray-400 dark:text-gray-500">is_verified</span>
+                      </label>
+                  </div>
+<!--                  <div>-->
+<!--                      <label for="role_id" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">role_id</label>-->
+<!--                      <input type="text" name="role_id" id="role_id" placeholder="0" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required="">-->
+<!--                  </div>-->
+                  <fieldset>
+                      <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">role_id</label>
+                      <legend class="sr-only">role_id</legend>
+                      <div class="flex items-center mb-4">
+                          <input id="role_id-option-1" type="radio" name="role_id" value="0" class="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 dark:focus:bg-blue-600 dark:bg-gray-700 dark:border-gray-600" checked>
+                          <label for="role_id-option-1" class="block ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                              Head
+                          </label>
+                      </div>
+
+                      <div class="flex items-center mb-4">
+                          <input id="role_id-option-2" type="radio" name="role_id" value="1" class="w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 dark:focus:bg-blue-600 dark:bg-gray-700 dark:border-gray-600">
+                          <label for="role_id-option-2" class="block ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                              Researcher
+                          </label>
+                      </div>
+                  </fieldset>
+
+                  <button type="submit" id="submitButton" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Sign up</button>
                   <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                      Already have an account? <a href="#" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign in</a>
+                      Already have an account? <a href="{{ url_for('signin')}}" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign in</a>
                   </p>
               </form>
           </div>
       </div>
   </div>
+        <div id="result"></div>
+
 </section>
+<script>
+    document.getElementById("submitButton").addEventListener("click", function () {
+        var emailData = document.getElementById("email").value;
+        var passwordData = document.getElementById("password").value;
+        var usernameData = document.getElementById("username").value;
+
+        var checkboxData = [];
+        var checkboxes = document.getElementsByName("checkboxes");
+        checkboxes.forEach(function (checkbox) {
+            if (checkbox.checked) {
+                checkboxData.push(true);
+            }
+            else {
+                checkboxData.push(false);
+            }
+        });
+
+        var radioData;
+        var radios = document.getElementsByName("role_id");
+        radios.forEach(function (radio) {
+            if (radio.checked) {
+                radioData = radio.value;
+            }
+        });
+
+        // Создайте объект JSON для передачи данных
+        var jsonData = {
+            "email": emailData,
+            "password": passwordData,
+            "is_active": checkboxData.at(0),
+            "is_superuser": checkboxData.at(1),
+            "is_verified": checkboxData.at(2),
+            "username": usernameData,
+            "role_id": radioData
+        };
+
+        // Отправьте данные на сервер с помощью AJAX-запроса
+        fetch('/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsonData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("result").innerHTML = "Ответ от сервера: " + JSON.stringify(data);
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+        });
+    });
+</script>
 
 {%endblock%}

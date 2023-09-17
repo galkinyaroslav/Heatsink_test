@@ -20,10 +20,11 @@ def get_base_page(request: Request):
 
 
 @router.get('/runs/', name='runs')
-def get_runs_page(request: Request, runs=Depends(get_runs)):
+def get_runs_page(request: Request, datadict=Depends(get_runs)):
     return templates.TemplateResponse('runs.html', {
         'request': request,
-        'runs': runs['data']}
+        'runs': datadict['lostofdata'],
+        'user': datadict['user']}
         )
 
 

@@ -109,7 +109,8 @@ async def get_runs(offset: int | None = None,
     # print(run_numbers)
     response = [i for i in run_numbers]
     # print(response)
-    return {'data': response}
+    return {'lostofdata': response,
+            'user': user}
 
 
 @router.get('/runs/{run_number}')
