@@ -22,22 +22,27 @@ router = APIRouter(
 )
 
 
-@router.post('/new-run')
-async def new_run(session: AsyncSession = Depends(get_async_session), user: User = Depends(current_user)):
+@router.post('/new-run', name='new_run')
+async def new_run(session: AsyncSession = Depends(get_async_session),
+                  user: User = Depends(current_user)):
     # update Run.number incrementing by 1
     stmt = update(Run).filter(Run.id == 1).values(number=Run.number + 1)
     await session.execute(stmt)
     await session.commit()
-    return {'massage': 'new run is initiated'}
+    query = select(Run).where(Run.id == 1)
+    result = await session.scalars(query)
+    run = result.one()
+    return run.number
 
 
-@router.post('/run-num')
-async def run_num(session: AsyncSession = Depends(get_async_session),
+@router.post('/get-run-num', name='get_run_number')
+async def get_run_num(session: AsyncSession = Depends(get_async_session),
                   user: User = Depends(current_user)):
     # get current Run.number
     query = select(Run).where(Run.id == 1)
     result = await session.scalars(query)
     run = result.one()
+    print(run.number)
     if result is None:
         first_run = Run(id=1, number=1)
         session.add(first_run)

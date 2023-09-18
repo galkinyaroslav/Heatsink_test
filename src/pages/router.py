@@ -51,7 +51,6 @@ def signin(request: Request,
 def logout(request: Request,
            user: User = Depends(current_user),
            ):
-
     response = RedirectResponse(url=router.url_path_for(signin.__name__), status_code=status.HTTP_302_FOUND)
     response.delete_cookie(key=cookie_transport.cookie_name)
     return response
@@ -63,4 +62,15 @@ def signup(request: Request,):
         'request': request,
         'user': current_user
     }
-        )
+                                      )
+
+
+@router.get('/control/', name='control')
+def control(request: Request,
+            user: User = Depends(current_user),
+            ):
+    return templates.TemplateResponse('control.html', {
+        'request': request,
+        'user': current_user,
+    }
+                                      )
