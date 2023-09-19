@@ -69,24 +69,13 @@ async def get_measurements(session: AsyncSession = Depends(get_async_session),
     return data
 
 
-@router.post('/run-meas')
+@router.post('/run-meas', name='run_meas')
 async def run_meas(part: RunPart = RunPart.first20,
                    session: AsyncSession = Depends(get_async_session),
                    user: User = Depends(current_user)):
-    # run part of measurements and add it to db
-    # measurements_to_db = dict()
-    # data = mc.read_data(a34970)
-    # measurements_to_db['data'] = data['data']
-    # run = await session.scalars(select(Run).where(Run.id == 1))
-    # measurements_to_db['run_number'] = run.one().number
-    # measurements_to_db['user_id'] = user.id
-    # measurements_to_db['measuredpart'] = part.name
-    # stmt = insert(Measurement).values(**measurements_to_db)
-    # await session.execute(stmt)
-    # await session.commit()
-    # return measurements_to_db
     run = await session.scalars(select(Run).where(Run.id == 1))
-    data = mc.read_data(a34970)
+    # data = mc.read_data(a34970)  #TODO UNCOMMENT IT
+    data = {'data': [float(i) for i in range(20)]}  # TODO COMMENT IT!!!!
     measurements_to_db = Measurement()
     measurements_to_db.data = data['data']
     measurements_to_db.run_number = run.one().number
