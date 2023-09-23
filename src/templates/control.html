@@ -5,6 +5,14 @@
 {% endblock %}
 {% block content %}
 <div class="grid-cols-2	max-h-full items-center bg-gray-50 dark:bg-gray-900">
+    <div class="grid h-full items-center max-w-lg grid-cols-4 mx-auto font-medium ">
+        <button type="button" onclick="configure()" id="configure" class="flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Configure the Device</button>
+        <button type="button" onclick="getMeas()" id="get_meas" class="flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Get Meas</button>
+        <div class="box-flex2">
+            <span id="measurement" class="flex mb-2 text-sm font-medium text-gray-900 dark:text-white ">Measurement</span>
+        </div>
+
+    </div>
     <form id="get_run_form">
         <div class="grid h-full items-center max-w-lg grid-cols-4 mx-auto font-medium ">
             <button type="button" onclick="getRun()" id="get_run_button" class="flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Get current RunNumber</button>
@@ -88,6 +96,29 @@
                 document.getElementById("current_run").textContent = await response.json();
             }
         }
+
+    async function configure() {
+            const response = await fetch(`/measurements/configure/`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "None"
+                }
+            });
+        }
+    async function getMeas() {
+        const response = await fetch(`/measurements/get-measurements/`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "None"
+            }
+        });
+        if (response.ok) {
+            const resp1 = await response.json();
+            const resp2 = resp1.data
+            document.getElementById("measurement").textContent =resp2
+
+        }
+    }
     async function runMeas(part_num) {
             // const newRun = document.getElementById("new_run").value;
             // const newRun = document.getElementById("new_run").value;

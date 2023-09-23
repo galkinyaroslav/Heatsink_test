@@ -997,3 +997,4 @@ pydantic~=1.10.11
 python-dotenv~=1.0.0
 PyVISA~=1.13.0
 alembic~=1.11.3
+openpyxl~=3.1.2

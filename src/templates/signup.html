@@ -99,7 +99,6 @@
             }
         });
 
-        // Создайте объект JSON для передачи данных
         var jsonData = {
             "email": emailData,
             "password": passwordData,
@@ -110,7 +109,6 @@
             "role_id": radioData
         };
 
-        // Отправьте данные на сервер с помощью AJAX-запроса
         fetch('/auth/register', {
             method: 'POST',
             headers: {
@@ -120,10 +118,10 @@
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById("result").innerHTML = "Ответ от сервера: " + JSON.stringify(data);
+            document.getElementById("result").innerHTML = "Response from server: " + JSON.stringify(data);
         })
         .catch(error => {
-            console.error('Ошибка:', error);
+            console.error('Error:', error);
         });
     });
 </script>
