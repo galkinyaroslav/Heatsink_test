@@ -15,7 +15,7 @@ PUBLIC_KEY = SECRET_KEY_PUBLIC
 def get_jwt_strategy() -> JWTStrategy:
     return JWTStrategy(
         secret=PRIVATE_KEY,
-        lifetime_seconds=3600,
+        lifetime_seconds=36000,
         algorithm="RS256",
         public_key=PUBLIC_KEY
     )
