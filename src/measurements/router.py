@@ -13,6 +13,8 @@ from measurements.models import Run, Measurement
 from measurements.schemas import RunPart, MeasurementsToDB
 import csv
 from openpyxl import Workbook
+from measurements.models import Run
+from measurements.plot_gen import gen_hex_plot
 
 a34970 = mc.find_device()
 
@@ -44,7 +46,6 @@ async def get_run_num(session: AsyncSession = Depends(get_async_session),
     query = select(Run).where(Run.id == 1)
     result = await session.scalars(query)
     run = result.one()
-    print(run.number)
     if result is None:
         first_run = Run(id=1, number=1)
         session.add(first_run)
@@ -200,3 +201,18 @@ async def data_to_excel(run_number: int,
     wb.save(f'saved/#{run_number}.xlsx')
 
     return {'message': 'Saved'}
+
+
+@router.post('/run-meas-top')
+async def run_meas_top(session: AsyncSession = Depends(get_async_session)):
+    # run measurements top side and add it to db
+    return
+
+
+@router.get('/get-hex-plot')
+async def get_hex_plot(session: AsyncSession = Depends(get_async_session), side: str = 'top'):
+    # run measurements top side and add it to db
+    data = []
+    buf = gen_hex_plot(data=data, side=side)
+    response = Response(content=buf.getvalue(), media_type='image/png')
+    return response
