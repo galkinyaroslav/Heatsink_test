@@ -163,9 +163,9 @@ async def data_to_excel(run_number: int,
     listofdata2 = results2.scalars().all()
     results3 = await session.execute(query3)
     listofdata3 = results3.scalars().all()
-    header_bottom = [i for i in range(1, 24, 1)]
-    header_top = [i for i in range(24, 59, 1)]
-    header_water = (59, 60)
+    header_bottom = ['timestamp'] + [i for i in range(1, 24, 1)]
+    header_top = ['timestamp'] + [i for i in range(24, 59, 1)]
+    header_water = ['timestamp'] + [59, 60]
     wb = Workbook()
     ws_bottom = wb.active
     ws_bottom.title = 'Bottom side'
@@ -174,17 +174,27 @@ async def data_to_excel(run_number: int,
     ws_bottom.append(header_bottom)
     ws_top.append(header_top)
     ws_water.append(header_water)
-
-
-    # ws_water.iter_rows(min_row=1, max_col=3, max_row=2)
-    # print(ws_water.iter_rows(min_row=1, max_col=3, max_row=2))
+    delta_bottom = 0
+    delta_top = 0
+    delta_watter = 0
     for i, j, k in zip(listofdata1, listofdata2, listofdata3):
         # print(i.data[18], i.data[19])
-        row_bottom = i.data[:] + j.data[:3]
+        if delta_bottom == 0:
+            time_bottom = 0
+            time_top = 0
+            time_water = 0
+            delta_bottom = i.measure_datetime.timestamp()
+            delta_top = j.measure_datetime.timestamp()
+            delta_watter = k.measure_datetime.timestamp()
+        else:
+            time_bottom = i.measure_datetime.timestamp() - delta_bottom
+            time_top = j.measure_datetime.timestamp() - delta_top
+            time_water = k.measure_datetime.timestamp() - delta_watter
+        row_bottom = [time_bottom] + i.data[:] + j.data[:3]
         ws_bottom.append(row_bottom)
-        row_top = j.data[3:] + j.data[:18]
+        row_top = [time_top] + j.data[3:] + k.data[:18]
         ws_top.append(row_top)
-        row_water = k.data[18:]
+        row_water = [time_water] + k.data[18:]
         ws_water.append(row_water)
 
     wb.save(f'saved/#{run_number}.xlsx')
