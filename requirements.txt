@@ -989,3 +989,14 @@ wrapt==1.15.0 ; python_version >= "3.11" and python_version < "4.0" \
     --hash=sha256:f87ec75864c37c4c6cb908d282e1969e79763e0d9becdfe9fe5473b7bb1e5f09 \
     --hash=sha256:fbec11614dba0424ca72f4e8ba3c420dba07b4a7c206c8c8e4e73f2e98f4c559 \
     --hash=sha256:fd69666217b62fa5d7c6aa88e507493a34dec4fa20c5bd925e4bc12fce586639
+
+fastapi~=0.99.1
+SQLAlchemy~=2.0.18
+DateTime~=5.2
+pydantic~=1.10.11
+python-dotenv~=1.0.0
+PyVISA~=1.13.0
+alembic~=1.11.3
+openpyxl~=3.1.2
+matplotlib~=3.7.2
+numpy~=1.25.2

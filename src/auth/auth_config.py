@@ -6,7 +6,7 @@ from auth.manager import get_user_manager
 from auth.models import User
 from config import SECRET_KEY_PRIVATE, SECRET_KEY_PUBLIC, SECRET_KEY_HS256
 
-cookie_transport = CookieTransport(cookie_name='heatsink_test_cookie', cookie_max_age=3600, cookie_secure=False)
+cookie_transport = CookieTransport(cookie_name='heatsink_test_cookie', cookie_max_age=36000, cookie_secure=False)
 
 PRIVATE_KEY = SECRET_KEY_PRIVATE
 PUBLIC_KEY = SECRET_KEY_PUBLIC
@@ -15,7 +15,7 @@ PUBLIC_KEY = SECRET_KEY_PUBLIC
 def get_jwt_strategy() -> JWTStrategy:
     return JWTStrategy(
         secret=PRIVATE_KEY,
-        lifetime_seconds=3600,
+        lifetime_seconds=36000,
         algorithm="RS256",
         public_key=PUBLIC_KEY
     )

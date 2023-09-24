@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script>
+
+</script>
+{% endblock %}
+{% block content %}
+<div class="flex justify-center flex-col items-center">
+    <span class="flex text-3xl my-3">ALL RUNS</span>
+    <ul class="max-w-md space-y-1 list-disc">
+    {% for run in runs %}
+        <li>
+            <a href="{{ url_for('arun', run_number=run.run_number)}}" class="text-gray-700 dark:text-gray-500 hover:underline">
+            <span class="text-2xl font-bold">Run#:</span>
+            <span class="text-2xl"> {{ run.run_number }}</span>
+            <span class="text-2xl font-bold">Datetime:</span>
+            <span class="text-lg"> {{ run.datetime }}</span>
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
