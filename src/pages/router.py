@@ -56,49 +56,59 @@ async def get_arun_page(run_number: int,
     listofdata2 = results2.scalars().all()
     results3 = await session.execute(query3)
     listofdata3 = results3.scalars().all()
-    img_bottom = gen_hex_plot(listofdata1[-1].data[:] + listofdata2[-1].data[:3], side='bottom')
-    img_top = gen_hex_plot(data=listofdata2[-1].data[11:] + listofdata3[-1].data[:14], side='top')
-    df1 = pd.DataFrame(columns=[i for i in range(1, 21, 1)])
-    df2 = pd.DataFrame(columns=[i for i in range(21, 41, 1)])
-    df3 = pd.DataFrame(columns=[i for i in range(41, 61, 1)])
+    try:
+        img_bottom = gen_hex_plot(listofdata1[-1].data[:] + listofdata2[-1].data[:3], side='bottom')
+        img_top = gen_hex_plot(data=listofdata2[-1].data[11:] + listofdata3[-1].data[:14], side='top')
 
-    delta_first20 = 0
-    delta_second20 = 0
-    delta_third20 = 0
-    for i, j, k in zip(listofdata1, listofdata2, listofdata3):
-        if delta_first20 == 0:
-            time_first20 = 0
-            time_second20 = 0
-            time_third20 = 0
-            delta_first20 = i.measure_datetime.timestamp()
-            delta_second20 = j.measure_datetime.timestamp()
-            delta_third20 = k.measure_datetime.timestamp()
-        else:
-            time_first20 = i.measure_datetime.timestamp() - delta_first20
-            time_second20 = j.measure_datetime.timestamp() - delta_second20
-            time_third20 = k.measure_datetime.timestamp() - delta_third20
-        df1.loc[f'{int(time_first20)}'] = i.data[:]
-        df2.loc[f'{int(time_second20)}'] = j.data[:]
-        df3.loc[f'{int(time_third20)}'] = k.data[:]
+        df1 = pd.DataFrame(columns=[i for i in range(1, 21, 1)])
+        df2 = pd.DataFrame(columns=[i for i in range(21, 41, 1)])
+        df3 = pd.DataFrame(columns=[i for i in range(41, 61, 1)])
 
-    df1.plot()
-    buf1 = io.BytesIO()
-    plt.savefig(buf1, format='png')
-    buf1.seek(0)
-    png_data1 = base64.b64encode(buf1.read()).decode()
+        delta_first20 = 0
+        delta_second20 = 0
+        delta_third20 = 0
+        for i, j, k in zip(listofdata1, listofdata2, listofdata3):
+            if delta_first20 == 0:
+                time_first20 = 0
+                time_second20 = 0
+                time_third20 = 0
+                delta_first20 = i.measure_datetime.timestamp()
+                delta_second20 = j.measure_datetime.timestamp()
+                delta_third20 = k.measure_datetime.timestamp()
+            else:
+                time_first20 = i.measure_datetime.timestamp() - delta_first20
+                time_second20 = j.measure_datetime.timestamp() - delta_second20
+                time_third20 = k.measure_datetime.timestamp() - delta_third20
+            df1.loc[f'{int(time_first20)}'] = i.data[:]
+            df2.loc[f'{int(time_second20)}'] = j.data[:]
+            df3.loc[f'{int(time_third20)}'] = k.data[:]
 
-    df2.plot()
-    buf2 = io.BytesIO()
-    plt.savefig(buf2, format='png')
-    buf2.seek(0)
-    png_data2 = base64.b64encode(buf2.read()).decode()
+        df1.plot()
+        buf1 = io.BytesIO()
+        plt.savefig(buf1, format='png')
+        buf1.seek(0)
+        png_data1 = base64.b64encode(buf1.read()).decode()
 
-    df3.plot()
-    buf3 = io.BytesIO()
-    plt.savefig(buf3, format='png')
-    buf3.seek(0)
-    png_data3 = base64.b64encode(buf3.read()).decode()
+        df2.plot()
+        buf2 = io.BytesIO()
+        plt.savefig(buf2, format='png')
+        buf2.seek(0)
+        png_data2 = base64.b64encode(buf2.read()).decode()
 
+        df3.plot()
+        buf3 = io.BytesIO()
+        plt.savefig(buf3, format='png')
+        buf3.seek(0)
+        png_data3 = base64.b64encode(buf3.read()).decode()
+
+
+    except Exception as e:
+        print(e)
+        img_bottom = None
+        img_top =  None
+        png_data1 =  None
+        png_data2 =  None
+        png_data3 =  None
     return templates.TemplateResponse('arun.html', {
         'request': request,
         'listofdata': datadict['listofdata'],
