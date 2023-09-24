@@ -1,12 +1,12 @@
+import base64
 import io
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 from matplotlib.patches import RegularPolygon
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 
-def gen_hex_plot(data: list = None, side: str = 'top') -> io.BytesIO:
+def gen_hex_plot(data: list = None, side: str = 'top') -> str:
 
     _num_rows = 5
     _num_cols = 8
@@ -54,7 +54,7 @@ def gen_hex_plot(data: list = None, side: str = 'top') -> io.BytesIO:
             edgecolor='black',
             facecolor=plt.cm.plasma(norm(temperature)))  # normalization
         ax.add_patch(hexagon)
-        ax.text(center[0], center[1], str(temperature), ha='center', va='center', color='black', fontsize=10)
+        ax.text(center[0], center[1], str(temperature), ha='center', va='center', color='black', fontsize=6)
 
     # shift plot from axis
     ax.set_xlim(-0.5, _num_cols * dx + x_init + 0.5)
@@ -69,13 +69,12 @@ def gen_hex_plot(data: list = None, side: str = 'top') -> io.BytesIO:
     if __name__ == '__main__':
         fig.show()
 
-    canvas = FigureCanvas(fig)
     buf = io.BytesIO()
-    canvas.print_png(buf)
-    # print(len(buf.getvalue()))
-
-    return buf
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    png_data = base64.b64encode(buf.read()).decode()
+    return png_data
 
 
 if __name__ == '__main__':
-    get_hex_plot(side='bottom')
+    gen_hex_plot(side='bottom')

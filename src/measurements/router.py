@@ -210,7 +210,9 @@ async def run_meas_top(session: AsyncSession = Depends(get_async_session)):
 
 
 @router.get('/get-hex-plot')
-async def get_hex_plot(session: AsyncSession = Depends(get_async_session), side: str = 'top'):
+async def get_hex_plot(side: str = 'top',
+                       session: AsyncSession = Depends(get_async_session),
+                       user: User = Depends(current_user)):
     # run measurements top side and add it to db
     data = []
     buf = gen_hex_plot(data=data, side=side)
