@@ -1,0 +1,132 @@
+{%extends "base.html" %}
+{% block head %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<section class="bg-gray-50 dark:bg-gray-900">
+
+  <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+      <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+
+        <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">Temperature monitoring</h1>
+        <div class="grid h-full items-center max-w-lg grid-cols-4 mx-auto font-medium ">
+
+            <button onclick="startTimer()" class="flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Start</button>
+            <button onclick="stopTimer()" class="flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Stop</button>
+        </div>
+        <canvas id="myChart"></canvas>
+      </div>
+  </div>
+</section>
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var chartData0 = [];
+        var chartData1 = [];
+        var chartData2 = [];
+        var chartData3 = [];
+        var chartData4 = [];
+        var chartData5 = [];
+[1, 4, 7, 11, 18, 19]
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: '2',
+                    data: chartData0,
+                    borderColor: 'rgba(0, 255, 255, 1)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: '5_in_box',
+                    data: chartData1,
+                    borderColor: 'rgba(0, 0, 255, 1)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: '8',
+                    data: chartData2,
+                    borderColor: 'rgba(255, 255, 0, 1)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: '42',
+                    data: chartData3,
+                    borderColor: 'rgba(255, 0, 255, 1)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: 'watter_IN',
+                    data: chartData4,
+                    borderColor: 'rgba(255, 0, 0, 1)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: 'watter_OUT',
+                    data: chartData5,
+                    borderColor: 'rgba(0, 255, 0, 1)',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Time, s'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Temperature, °C'
+                        }
+                    }
+                }
+            }
+        });
+
+        async function startTimer() {
+            await fetch('/measurements/start-timer1', {
+                method: 'POST'
+            });
+        }
+
+        async function stopTimer() {
+            await fetch('/measurements/stop-timer1', {
+                method: 'POST'
+            });
+        }
+
+        const ws = new WebSocket("ws://localhost:8000/measurements/ws");
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+                chartData0.push(data[0]);
+                chartData1.push(data[1]);
+                chartData2.push(data[2]);
+                chartData3.push(data[3]);
+                chartData4.push(data[4]);
+                chartData5.push(data[5]);
+
+
+            // }
+            // chartData.push({ x: data[0], y: data[1] });
+            console.log(data);
+            console.log(data[0]);
+            console.log(data[1]);
+
+
+            myChart.update();
+        };
+    </script>
+{% endblock %}
+

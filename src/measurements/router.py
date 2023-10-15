@@ -1,5 +1,7 @@
+import asyncio
 from datetime import datetime
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, BackgroundTasks, WebSocket
+from fastapi.websockets import WebSocketState
 from pydantic import BaseModel
 
 from sqlalchemy import select, insert, update, func, Row, RowMapping
@@ -199,7 +201,7 @@ async def data_to_excel(run_number: int,
         ws_water.append(row_water)
 
     wb.save(f'saved/#{run_number}.xlsx')
-
+    wb.close()
     return {'message': 'Saved'}
 
 
@@ -218,3 +220,80 @@ async def get_hex_plot(side: str = 'top',
     buf = gen_hex_plot(data=data, side=side)
     response = Response(content=buf.getvalue(), media_type='image/png')
     return response
+
+
+stop_timer = False
+websocket_timer = False
+chart_data = [[(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]]
+measured_data = []
+measurement_time = []
+# Функция для обработки WebSocket-соединения
+@router.websocket('/ws')
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    global websocket_timer
+    while not websocket_timer:
+        if websocket.client_state == WebSocketState.DISCONNECTED:
+            print(websocket.client_state)
+            break
+        # print(chart_data)
+        await websocket.send_json(chart_data[-1])
+        await asyncio.sleep(3)
+    await websocket.close()
+    websocket_timer = False
+
+
+@router.post("/start-timer1/")
+async def start_timer_task(background_tasks: BackgroundTasks):
+    global stop_timer
+    stop_timer = False  # Reset the stop flag
+    global chart_data
+    chart_data = [[(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]]
+    global measurement_time
+    measurement_time = []
+    global measured_data
+    measured_data = []
+    previous_time = 0
+
+    while not stop_timer:
+        if previous_time == 0:
+            current_time = 0
+            previous_time = int(datetime.timestamp(datetime.utcnow()))
+        else:
+            current_time = int(datetime.timestamp(datetime.utcnow()) - previous_time)
+            measurement_time.append(current_time)
+        meas_data = mc.read_data(a34970)['data']
+        measured_data.append(meas_data)
+        dataset_all = [(current_time, value) for value in meas_data]
+        required_data = [1, 4, 7, 11, 18, 19]
+        dataset_several = [dataset_all[index] for index in required_data]
+        chart_data.append(dataset_several)
+        print(dataset_several)
+        await asyncio.sleep(3)
+
+
+@router.post("/stop-timer1/")
+async def stop_timer_task():
+    global measurement_time
+    global measured_data
+    print(measured_data)
+    print(measurement_time)
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'RT'
+    # row = [time_bottom] + i.data[:] + j.data[:3]
+    for i in range(len(measurement_time)):
+        row = [measurement_time[i]]+measured_data[i]
+        print(row)
+        ws.append(row)
+    wb.save(f'saved/RT{str(datetime.utcnow())}.xlsx')
+    wb.close()
+    global chart_data
+    chart_data = [[(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]]
+    measurement_time = []
+    measured_data = []
+    global stop_timer
+    stop_timer = True
+    global websocket_timer
+    websocket_timer = True
+    return {"message": "Timer stopped"}

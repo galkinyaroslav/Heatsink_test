@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, Depends, Response, status
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_async_session
@@ -73,8 +73,8 @@ async def get_arun_page(run_number: int,
                 time_second20 = 0
                 time_third20 = 0
                 delta_first20 = i.measure_datetime.timestamp()
-                delta_second20 = j.measure_datetime.timestamp()
-                delta_third20 = k.measure_datetime.timestamp()
+                delta_second20 = i.measure_datetime.timestamp()
+                delta_third20 = i.measure_datetime.timestamp()
             else:
                 time_first20 = i.measure_datetime.timestamp() - delta_first20
                 time_second20 = j.measure_datetime.timestamp() - delta_second20
@@ -105,10 +105,10 @@ async def get_arun_page(run_number: int,
     except Exception as e:
         print(e)
         img_bottom = None
-        img_top =  None
-        png_data1 =  None
-        png_data2 =  None
-        png_data3 =  None
+        img_top = None
+        png_data1 = None
+        png_data2 = None
+        png_data3 = None
     return templates.TemplateResponse('arun.html', {
         'request': request,
         'listofdata': datadict['listofdata'],
@@ -158,3 +158,21 @@ def control(request: Request,
         'user': current_user,
     }
                                       )
+
+
+@router.get("/chart",response_class=HTMLResponse)
+async def read_item(request: Request,
+            user: User = Depends(current_user),
+            ):
+    return templates.TemplateResponse('chart.html', {
+        'request': request,
+        'user': current_user,
+    }
+                                      )
+
+
+# @app.get("/", response_class=HTMLResponse)
+# async def read_item():
+#     with open("index.html", "r") as file:
+#         html_content = file.read()
+#     return HTMLResponse(content=html_content)
