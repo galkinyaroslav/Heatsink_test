@@ -15,61 +15,96 @@
             <button onclick="startTimer()" class="flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Start</button>
             <button onclick="stopTimer()" class="flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Stop</button>
         </div>
-        <canvas id="myChart"></canvas>
+        <canvas id="myChartCanvas"></canvas>
       </div>
   </div>
 </section>
     <script>
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var chartData0 = [];
-        var chartData1 = [];
-        var chartData2 = [];
-        var chartData3 = [];
-        var chartData4 = [];
-        var chartData5 = [];
-[1, 4, 7, 11, 18, 19]
-        var myChart = new Chart(ctx, {
+        const ctx = document.getElementById('myChartCanvas').getContext('2d');
+        const chartData0 = [];
+        const chartData1 = [];
+        const chartData2 = [];
+        const chartData3 = [];
+        const chartData4 = [];
+        const chartData5 = [];
+        const chartData6 = [];
+        const chartData7 = [];
+        const chartData8 = [];
+        const chartData9 = [];
+        const x_arr = []
+
+// [1, 4, 7, 11, 18, 19]
+        const myChart = new Chart(ctx, {
             type: 'line',
             data: {
+                labels: x_arr,
                 datasets: [{
-                    label: '2',
+                    label: '0',
                     data: chartData0,
                     borderColor: 'rgba(0, 255, 255, 1)',
                     borderWidth: 2,
                     fill: false
                 },
                 {
-                    label: '5_in_box',
+                    label: '1',
                     data: chartData1,
                     borderColor: 'rgba(0, 0, 255, 1)',
                     borderWidth: 2,
                     fill: false
                 },
                 {
-                    label: '8',
+                    label: '2',
                     data: chartData2,
                     borderColor: 'rgba(255, 255, 0, 1)',
                     borderWidth: 2,
                     fill: false
                 },
                 {
-                    label: '42',
+                    label: '3',
                     data: chartData3,
                     borderColor: 'rgba(255, 0, 255, 1)',
                     borderWidth: 2,
                     fill: false
                 },
                 {
-                    label: 'watter_IN',
+                    label: '4',
                     data: chartData4,
                     borderColor: 'rgba(255, 0, 0, 1)',
                     borderWidth: 2,
                     fill: false
                 },
                 {
-                    label: 'watter_OUT',
+                    label: '5',
                     data: chartData5,
-                    borderColor: 'rgba(0, 255, 0, 1)',
+                    borderColor: 'rgba(127, 255, 127, 1)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: '6',
+                    data: chartData6,
+                    borderColor: 'rgba(255, 0, 127, 1)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: '7',
+                    data: chartData7,
+                    borderColor: 'rgba(255,0,0,0.29)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: '8',
+                    data: chartData8,
+                    borderColor: 'rgba(0, 0, 0, 1)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: '9',
+                    data: chartData9,
+                    borderColor: 'rgb(255,183,0,1)',
                     borderWidth: 2,
                     fill: false
                 }]
@@ -110,19 +145,16 @@
         const ws = new WebSocket("ws://localhost:8000/measurements/ws");
         ws.onmessage = function(event) {
             const data = JSON.parse(event.data);
-                chartData0.push(data[0]);
-                chartData1.push(data[1]);
-                chartData2.push(data[2]);
-                chartData3.push(data[3]);
-                chartData4.push(data[4]);
-                chartData5.push(data[5]);
+            // myChart.data.labels.push(new Date().toISOString());
+            // const currentTime = new Date().getSeconds();
+            myChart.data.labels.push(data.time);
 
+            for (let i = 0; i < data.data.length; i++) {
+                myChart.data.datasets[i].data.push(data.data[i]);
+            }
 
-            // }
-            // chartData.push({ x: data[0], y: data[1] });
-            console.log(data);
-            console.log(data[0]);
-            console.log(data[1]);
+            console.log(data.data);
+            console.log(data.time);
 
 
             myChart.update();

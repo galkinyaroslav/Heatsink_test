@@ -1,6 +1,7 @@
 import asyncio
+import json
 from datetime import datetime
-from fastapi import APIRouter, Depends, Response, BackgroundTasks, WebSocket
+from fastapi import APIRouter, Depends, Response, BackgroundTasks, WebSocket, WebSocketDisconnect
 from fastapi.websockets import WebSocketState
 from pydantic import BaseModel
 
@@ -221,55 +222,106 @@ async def get_hex_plot(side: str = 'top',
     response = Response(content=buf.getvalue(), media_type='image/png')
     return response
 
+# WEBSOCKETS
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: list[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def send_dataset(self, message: json, websocket: WebSocket):
+        await websocket.send_json(message)
+
+    async def broadcast(self, message: json):
+        for connection in self.active_connections:
+            await connection.send_json(message)
+
 
 stop_timer = False
-websocket_timer = False
-chart_data = [[(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]]
+data_ready = False
 measured_data = []
 measurement_time = []
+
 # Функция для обработки WebSocket-соединения
+# @router.websocket('/ws')
+# async def websocket_endpoint(websocket: WebSocket):
+#     await websocket.accept()
+#     global stop_timer
+#     while not stop_timer:
+#         if websocket.client_state == WebSocketState.DISCONNECTED:
+#             print(websocket.client_state)
+#             break
+#         # print(chart_data)
+#         await websocket.send_json(chart_data[-1])
+#         await asyncio.sleep(5)
+#     await websocket.close()
+#     stop_timer = False
+
+manager = ConnectionManager()
+
+
+class WebSocketData:
+    def __init__(self, temperature: list[str] = None):
+        self.temperature = temperature
+
+
+ws_data = WebSocketData()
+
+
 @router.websocket('/ws')
 async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    global websocket_timer
-    while not websocket_timer:
-        if websocket.client_state == WebSocketState.DISCONNECTED:
-            print(websocket.client_state)
-            break
-        # print(chart_data)
-        await websocket.send_json(chart_data[-1])
-        await asyncio.sleep(3)
-    await websocket.close()
-    websocket_timer = False
+    await manager.connect(websocket)
+    global stop_timer
+    global data_ready
+    print(websocket.client_state)
+    try:
+        while True:
+            if data_ready:
+                # data = await websocket.receive_text()
+                # await manager.send_dataset(ws_data.temperature, websocket)
+                await manager.broadcast(message={'data': measured_data[-1],
+                                                 'time': measurement_time[-1]})
+                data_ready = False
+
+            await asyncio.sleep(1)
+            # await manager.broadcast(f"Client # says: {data}")
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+        print(f'{websocket} is disconnected')
+        # await manager.broadcast(f"Client #{websocket} left the chat")
 
 
 @router.post("/start-timer1/")
 async def start_timer_task(background_tasks: BackgroundTasks):
     global stop_timer
     stop_timer = False  # Reset the stop flag
-    global chart_data
-    chart_data = [[(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]]
+
     global measurement_time
-    measurement_time = []
+    measurement_time = [0,]
     global measured_data
     measured_data = []
     previous_time = 0
+    global data_ready
 
     while not stop_timer:
+        data_ready = False
         if previous_time == 0:
-            current_time = 0
+            # current_time = 0
             previous_time = int(datetime.timestamp(datetime.utcnow()))
         else:
             current_time = int(datetime.timestamp(datetime.utcnow()) - previous_time)
             measurement_time.append(current_time)
         meas_data = mc.read_data(a34970)['data']
         measured_data.append(meas_data)
-        dataset_all = [(current_time, value) for value in meas_data]
-        required_data = [1, 4, 7, 11, 18, 19]
-        dataset_several = [dataset_all[index] for index in required_data]
-        chart_data.append(dataset_several)
-        print(dataset_several)
-        await asyncio.sleep(3)
+
+        data_ready = True
+        print(meas_data)
+        await asyncio.sleep(5)
 
 
 @router.post("/stop-timer1/")
@@ -288,12 +340,8 @@ async def stop_timer_task():
         ws.append(row)
     wb.save(f'saved/RT{str(datetime.utcnow())}.xlsx')
     wb.close()
-    global chart_data
-    chart_data = [[(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]]
     measurement_time = []
     measured_data = []
     global stop_timer
     stop_timer = True
-    global websocket_timer
-    websocket_timer = True
     return {"message": "Timer stopped"}

@@ -1,7 +1,7 @@
 import pyvisa as visa
 from pyvisa import Resource
 
-CHANNELS = '(@101:110,201:210)'
+CHANNELS = '(@201:210)'
 
 
 def find_device() -> Resource:
