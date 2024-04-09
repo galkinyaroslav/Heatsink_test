@@ -1,0 +1,37 @@
+version: "3"
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres:15
+    environment:
+      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASS}"
+    volumes:
+      - heatsink_test-data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    restart: unless-stopped
+#    networks:
+#      - postgres
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "${DB_PGA_EMAIL}"
+      PGADMIN_DEFAULT_PASSWORD: "${DB_PGA_PASSWORD}"
+#      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "${DB_PGA_PORT}:80"
+    restart: unless-stopped
+#    networks:
+#      - postgres
+volumes:
+  heatsink_test-data:
+  pgadmin-data:
+#networks:
+#  postgres:
+#    driver: bridge
