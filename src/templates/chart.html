@@ -50,7 +50,8 @@
                     data: chartData1,
                     borderColor: 'rgba(0, 0, 255, 1)',
                     borderWidth: 2,
-                    fill: false
+                    fill: false,
+                    hidden: true
                 },
                 {
                     label: '2',
@@ -120,10 +121,12 @@
                         }
                     },
                     y: {
-                        beginAtZero: true,
+                        beginAtZero: false,
                         title: {
                             display: true,
-                            text: 'Temperature, °C'
+                            text: 'Temperature, °C',
+                            min: -200,
+                            max: 300,
                         }
                     }
                 }
@@ -142,23 +145,45 @@
             });
         }
 
-        const ws = new WebSocket("ws://192.168.1.126:8000/measurements/ws");
+        const ws = new WebSocket("ws://192.168.1.236:8000/measurements/ws");
         ws.onmessage = function(event) {
             const data = JSON.parse(event.data);
             // myChart.data.labels.push(new Date().toISOString());
             // const currentTime = new Date().getSeconds();
             myChart.data.labels.push(data.time);
+            data.data.splice(1,1);
+            {#const maxY = Math.max(...data.data)#}
+            {#const minY = Math.min(...data.data)#}
+            {#myChart.options.scales.y.min = minY -(maxY-minY)*0.2#}
+            {#myChart.options.scales.y.max = minY -(maxY-minY)*0.2#}
 
             for (let i = 0; i < data.data.length; i++) {
-                myChart.data.datasets[i].data.push(data.data[i]);
+                {#if(i!==1) {#}
+                {#    updateDataset(i+(i>=1?0:1), data.data[i]);#}
+                {##}
+                if (i===0){
+                    myChart.data.datasets[i].data.push(data.data[i]);
+
+                }
+                else{
+                    const a= i +1
+                    myChart.data.datasets[a].data.push(data.data[i]);
+
+                }
+
+
             }
+            myChart.update();
 
             console.log(data.data);
             console.log(data.time);
 
 
-            myChart.update();
         };
+        function updateDataset(datasetIndex, newData){
+            myChart.data.datasets[datasetIndex].data.push(newData);
+            myChart.update();
+        }
     </script>
 {% endblock %}
 

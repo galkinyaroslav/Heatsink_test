@@ -1,6 +1,13 @@
 alembic init migrations
 alembic revision --autogenerate -m "initial "
+
+need to create roles: 0 head
+                      1 researcher
+
 alembic upgrade head
+
+
 
 cd ./src/
 uvicorn main:app --reload
+pip install setuptools

@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os.path
 from datetime import datetime
 from fastapi import APIRouter, Depends, Response, BackgroundTasks, WebSocket, WebSocketDisconnect
 from fastapi.websockets import WebSocketState
@@ -133,8 +134,12 @@ async def data_to_csv(run_number: int,
     query = select(Measurement).where(Measurement.run_number == run_number)
     results = await session.execute(query)
     listofdata = results.scalars().all()
+    path = './saved'
+    print(os.getcwd())
+    if not os.path.exists(path):
+        os.makedirs(path)
 
-    outfile = open(f'saved/#{run_number}.csv', 'w')
+    outfile = open(f'{path}/#{run_number}.csv', 'w')
     outcsv = csv.writer(outfile)
     header = ['part'] + [f'ch#{i}' for i in range(1, 21, 1)]
     header.append('datetime')
@@ -338,6 +343,10 @@ async def stop_timer_task():
         row = [measurement_time[i]]+measured_data[i]
         print(row)
         ws.append(row)
+    path = './saved'
+    # print(os.getcwd())
+    if not os.path.exists(path):
+        os.makedirs(path)
     wb.save(f'saved/RT{str(datetime.utcnow())}.xlsx')
     wb.close()
     measurement_time = [0,]
