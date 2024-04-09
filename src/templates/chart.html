@@ -142,7 +142,7 @@
             });
         }
 
-        const ws = new WebSocket("ws://localhost:8000/measurements/ws");
+        const ws = new WebSocket("ws://192.168.1.126:8000/measurements/ws");
         ws.onmessage = function(event) {
             const data = JSON.parse(event.data);
             // myChart.data.labels.push(new Date().toISOString());

@@ -340,8 +340,10 @@ async def stop_timer_task():
         ws.append(row)
     wb.save(f'saved/RT{str(datetime.utcnow())}.xlsx')
     wb.close()
-    measurement_time = []
+    measurement_time = [0,]
     measured_data = []
     global stop_timer
     stop_timer = True
+    global data_ready
+    data_ready = False
     return {"message": "Timer stopped"}
