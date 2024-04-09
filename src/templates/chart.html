@@ -1,0 +1,164 @@
+{%extends "base.html" %}
+{% block head %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<section class="bg-gray-50 dark:bg-gray-900">
+
+  <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+      <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+
+        <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">Temperature monitoring</h1>
+        <div class="grid h-full items-center max-w-lg grid-cols-4 mx-auto font-medium ">
+
+            <button onclick="startTimer()" class="flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Start</button>
+            <button onclick="stopTimer()" class="flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Stop</button>
+        </div>
+        <canvas id="myChartCanvas"></canvas>
+      </div>
+  </div>
+</section>
+    <script>
+        const ctx = document.getElementById('myChartCanvas').getContext('2d');
+        const chartData0 = [];
+        const chartData1 = [];
+        const chartData2 = [];
+        const chartData3 = [];
+        const chartData4 = [];
+        const chartData5 = [];
+        const chartData6 = [];
+        const chartData7 = [];
+        const chartData8 = [];
+        const chartData9 = [];
+        const x_arr = []
+
+// [1, 4, 7, 11, 18, 19]
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: x_arr,
+                datasets: [{
+                    label: '0',
+                    data: chartData0,
+                    borderColor: 'rgba(0, 255, 255, 1)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: '1',
+                    data: chartData1,
+                    borderColor: 'rgba(0, 0, 255, 1)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: '2',
+                    data: chartData2,
+                    borderColor: 'rgba(255, 255, 0, 1)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: '3',
+                    data: chartData3,
+                    borderColor: 'rgba(255, 0, 255, 1)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: '4',
+                    data: chartData4,
+                    borderColor: 'rgba(255, 0, 0, 1)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: '5',
+                    data: chartData5,
+                    borderColor: 'rgba(127, 255, 127, 1)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: '6',
+                    data: chartData6,
+                    borderColor: 'rgba(255, 0, 127, 1)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: '7',
+                    data: chartData7,
+                    borderColor: 'rgba(255,0,0,0.29)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: '8',
+                    data: chartData8,
+                    borderColor: 'rgba(0, 0, 0, 1)',
+                    borderWidth: 2,
+                    fill: false
+                },
+                {
+                    label: '9',
+                    data: chartData9,
+                    borderColor: 'rgb(255,183,0,1)',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Time, s'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Temperature, °C'
+                        }
+                    }
+                }
+            }
+        });
+
+        async function startTimer() {
+            await fetch('/measurements/start-timer1', {
+                method: 'POST'
+            });
+        }
+
+        async function stopTimer() {
+            await fetch('/measurements/stop-timer1', {
+                method: 'POST'
+            });
+        }
+
+        const ws = new WebSocket("ws://192.168.1.126:8000/measurements/ws");
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            // myChart.data.labels.push(new Date().toISOString());
+            // const currentTime = new Date().getSeconds();
+            myChart.data.labels.push(data.time);
+
+            for (let i = 0; i < data.data.length; i++) {
+                myChart.data.datasets[i].data.push(data.data[i]);
+            }
+
+            console.log(data.data);
+            console.log(data.time);
+
+
+            myChart.update();
+        };
+    </script>
+{% endblock %}
+

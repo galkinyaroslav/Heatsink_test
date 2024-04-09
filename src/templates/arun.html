@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script>
+
+</script>
+{% endblock %}
+{% block content %}
+
+<div class="grid h-full items-center  grid-cols-2 mx-auto font-medium  ">
+    <form id="data_to_csv" action="{{ url_for('arun_to_csv', run_number=listofdata[0].run_number)}}" method="post">
+        <div class="grid h-full items-center max-w-lg grid-cols-4 mx-auto font-medium ">
+            <button type="submit" id="to_csv_button" class="flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Save to CSV</button>
+        </div>
+    </form>
+
+    <form id="data_to_excel" action="{{ url_for('arun_to_excel', run_number=listofdata[0].run_number)}}" method="post">
+        <div class="grid h-full items-center max-w-lg grid-cols-4 mx-auto font-medium ">
+            <button type="submit" id="to_excel_button" class="flex text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Save to EXCEL</button>
+        </div>
+</form>
+</div>
+<div class="grid h-full items-center  grid-cols-2 mx-auto " >
+    <img src="data:image/png;base64,{{img_bottom}}" alt="Bottom heatmap" />
+    <img src="data:image/png;base64,{{img_top}}" alt="Top heatmap" />
+</div>
+<div>
+    <img src="data:image/png;base64,{{img_first}}" alt="First plot" />
+    <img src="data:image/png;base64,{{img_second}}" alt="Second plot" />
+    <img src="data:image/png;base64,{{img_third}}" alt="Third plot" />
+
+</div>
+<div class="flex justify-center flex-col items-center">
+    <span class="flex text-3xl my-3"></span>
+    <ul>
+    {% for data in listofdata %}
+        <li>
+            <span class="text-l">{{data.measuredpart}}</span>
+            <span class="text-l">{{data.data}}</span>
+            <span class="text-l">{{data.measure_datetime}}</span>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
