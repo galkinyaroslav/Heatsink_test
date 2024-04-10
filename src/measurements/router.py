@@ -4,6 +4,7 @@ import os.path
 from datetime import datetime, UTC
 from fastapi import APIRouter, Depends, Response, BackgroundTasks, WebSocket, WebSocketDisconnect
 from fastapi.websockets import WebSocketState
+from openpyxl.reader.excel import load_workbook
 from pydantic import BaseModel
 
 from sqlalchemy import select, insert, update, func, Row, RowMapping
@@ -253,20 +254,6 @@ data_ready = False
 measured_data = []
 measurement_time = []
 
-# Функция для обработки WebSocket-соединения
-# @router.websocket('/ws')
-# async def websocket_endpoint(websocket: WebSocket):
-#     await websocket.accept()
-#     global stop_timer
-#     while not stop_timer:
-#         if websocket.client_state == WebSocketState.DISCONNECTED:
-#             print(websocket.client_state)
-#             break
-#         # print(chart_data)
-#         await websocket.send_json(chart_data[-1])
-#         await asyncio.sleep(5)
-#     await websocket.close()
-#     stop_timer = False
 
 manager = ConnectionManager()
 
@@ -316,30 +303,44 @@ async def start_timer_task(background_tasks: BackgroundTasks):
     previous_time = 0
     global data_ready
 
-    wb = Workbook()
-    ws = wb.active
-    ws.title = 'RT'
-
+    # wb = Workbook()
+    # ws = wb.active
+    # ws.title = 'RT'
     path = './saved'
-    # print(os.getcwd())
     if not os.path.exists(path):
         os.makedirs(path)
-    wb.save(f'saved/RT{str(datetime.now(UTC))}.xlsx')
-    wb.close()
+    filename = f'{path}/RT{str(datetime.now(UTC))}.csv'
+    # wb.save(filename)
+    # wb.close()
+    f = open(filename, mode='a')
+
     while not stop_timer:
         data_ready = False
         if previous_time == 0:
             # current_time = 0
-            previous_time = int(datetime.timestamp(datetime.utcnow()))
+            previous_time = int(datetime.timestamp(datetime.now(UTC)))
         else:
-            current_time = int(datetime.timestamp(datetime.utcnow()) - previous_time)
+            current_time = int(datetime.timestamp(datetime.now(UTC)) - previous_time)
             measurement_time.append(current_time)
         meas_data = mc.read_data(a34970)['data']
         measured_data.append(meas_data)
+        # wbook = load_workbook(filename=filename)
+        # wsheet = wb.active
+        row = str(measurement_time[-1])+';'+';'.join([str(i) for i in measured_data[-1]])+'\n'
+        # strrow = ';'.join(row)
+        # print(row)
+        f.write(row)
+        # wsheet.append(row)
+        # # if not os.path.exists(path):
+        # #     os.makedirs(path)
+        # wbook.save(filename)
+        # wbook.close()
+
 
         data_ready = True
         print(meas_data)
         await asyncio.sleep(5)
+    f.close()
 
 
 @router.post("/stop-timer1/")
