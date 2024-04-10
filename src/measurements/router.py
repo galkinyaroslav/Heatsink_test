@@ -1,7 +1,7 @@
 import asyncio
 import json
 import os.path
-from datetime import datetime
+from datetime import datetime, UTC
 from fastapi import APIRouter, Depends, Response, BackgroundTasks, WebSocket, WebSocketDisconnect
 from fastapi.websockets import WebSocketState
 from pydantic import BaseModel
@@ -230,13 +230,14 @@ async def get_hex_plot(side: str = 'top',
 # WEBSOCKETS
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: list[WebSocket] = []
+        self.active_connections: set[WebSocket] = set()
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
-        self.active_connections.append(websocket)
+        self.active_connections.add(websocket)
 
     def disconnect(self, websocket: WebSocket):
+        # websocket.close()
         self.active_connections.remove(websocket)
 
     async def send_dataset(self, message: json, websocket: WebSocket):
@@ -295,10 +296,12 @@ async def websocket_endpoint(websocket: WebSocket):
 
             await asyncio.sleep(1)
             # await manager.broadcast(f"Client # says: {data}")
-    except WebSocketDisconnect:
+    except Exception as e:
+        print(f'Error occurred {e}')
+        # await manager.broadcast(f"Client #{websocket} left the chat")
+    finally:
         manager.disconnect(websocket)
         print(f'{websocket} is disconnected')
-        # await manager.broadcast(f"Client #{websocket} left the chat")
 
 
 @router.post("/start-timer1/")
@@ -313,6 +316,16 @@ async def start_timer_task(background_tasks: BackgroundTasks):
     previous_time = 0
     global data_ready
 
+    wb = Workbook()
+    ws = wb.active
+    ws.title = 'RT'
+
+    path = './saved'
+    # print(os.getcwd())
+    if not os.path.exists(path):
+        os.makedirs(path)
+    wb.save(f'saved/RT{str(datetime.now(UTC))}.xlsx')
+    wb.close()
     while not stop_timer:
         data_ready = False
         if previous_time == 0:
@@ -335,20 +348,20 @@ async def stop_timer_task():
     global measured_data
     print(measured_data)
     print(measurement_time)
-    wb = Workbook()
-    ws = wb.active
-    ws.title = 'RT'
+    # wb = Workbook()
+    # ws = wb.active
+    # ws.title = 'RT'
     # row = [time_bottom] + i.data[:] + j.data[:3]
-    for i in range(len(measurement_time)):
-        row = [measurement_time[i]]+measured_data[i]
-        print(row)
-        ws.append(row)
-    path = './saved'
-    # print(os.getcwd())
-    if not os.path.exists(path):
-        os.makedirs(path)
-    wb.save(f'saved/RT{str(datetime.utcnow())}.xlsx')
-    wb.close()
+    #     for i in range(len(measurement_time)):
+    #         row = [measurement_time[i]]+measured_data[i]
+    #         print(row)
+    #         ws.append(row)
+    # path = './saved'
+    # # print(os.getcwd())
+    # if not os.path.exists(path):
+    #     os.makedirs(path)
+    # wb.save(f'saved/RT{str(datetime.utcnow())}.xlsx')
+    # wb.close()
     measurement_time = [0,]
     measured_data = []
     global stop_timer
