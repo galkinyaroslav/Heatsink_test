@@ -281,7 +281,7 @@ async def websocket_endpoint(websocket: WebSocket):
                                                  'time': measurement_time[-1]})
                 data_ready = False
 
-            await asyncio.sleep(1)
+            await asyncio.sleep(10)
             # await manager.broadcast(f"Client # says: {data}")
     except Exception as e:
         print(f'Error occurred {e}')
@@ -339,7 +339,7 @@ async def start_timer_task(background_tasks: BackgroundTasks):
 
         data_ready = True
         print(meas_data)
-        await asyncio.sleep(5)
+        await asyncio.sleep(30)
     f.close()
 
 

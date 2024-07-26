@@ -1,7 +1,9 @@
+import time
+
 import pyvisa as visa
 from pyvisa import Resource
 
-CHANNELS = '(@201:210)'
+CHANNELS = '(@201:208)'
 
 
 def find_device() -> Resource:
@@ -29,7 +31,7 @@ def configure(device: Resource) -> dict:
     device.write('*CLS')
 
     device.write(f'CONF:TEMP FRTD, 85, {CHANNELS}')
-    device.write(f'TEMP:TRAN:FRTD:RES:REF 1000, {CHANNELS}')
+    device.write(f'TEMP:TRAN:FRTD:RES:REF 100, {CHANNELS}')
 
     # print(device.query(f'TEMP:TRAN:FRTD:RES:REF? {CHANNELS}'))
 
@@ -50,9 +52,29 @@ def read_data(device: Resource) -> dict:
     # print(data)
     return {'data': data}
 
-
 if __name__ == '__main__':
+    from datetime import datetime
+    import os
+    def save_data(d: dict) -> None:
+        path = './saved_arkolab'
+        if not os.path.exists(path):
+            os.makedirs(path)
+        filename = f'{path}/RT{str(datetime.now())}.csv'
+        # wb.save(filename)
+        # wb.close()
+        with open(filename, 'w') as f:
+            for key, value in d.items():
+                f.write(str(key) + ',' + ','.join(str(a) for a in value) + '\n')
+
+
     a34970 = find_device()
-    configure(a34970)
-    read_data(a34970)
+    # configure(a34970)
+    data_dict = {}
+    time_tick = 3
+    for i in range(31):
+        data_dict[i*time_tick] = read_data(a34970)['data']
+        print(data_dict[i*time_tick])
+        time.sleep(time_tick)
+    save_data(data_dict)
+    print(read_data(a34970))
     a34970.close()
